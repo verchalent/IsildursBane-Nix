@@ -1,0 +1,6 @@
+- [x] change ssh to use ssh keys only
+- [x] change kde to dark mode
+- [x] install brave browser
+- [x] allow wheel users to sudo without password
+- [x] enable RDP in kde
+- [x] move all config from configuration.nix into flake.nix

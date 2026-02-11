@@ -1,0 +1,6 @@
+**/hardware-configuration.nix
+result
+.direnv/
+*~
+*.swp
+.#*
