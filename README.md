@@ -1,102 +1,162 @@
 # IsildursBane-Nix
 
-Unified nix-darwin flake for all Apple Silicon Macs.
+Unified nix-darwin / NixOS flake for all machines. Single source of truth — shared config in common modules, machine-specific differences isolated in host and module overlays.
 
-| Host | Machine | Notes |
-|------|---------|-------|
-| `toyotama` | M4 MacBook Air | Full dev + media stack, stealth firewall |
-| `ungyo` | M2 Mac Mini | Server-oriented, Caps Lock → Escape |
+## Hosts
+
+| Hostname | Machine | OS | Notes |
+|----------|---------|-----|-------|
+| `toyotama` | M4 MacBook Air | nix-darwin | Full dev + media stack, stealth firewall |
+| `ungyo` | M2 Mac Mini | nix-darwin | Server-oriented, Caps Lock → Escape, insta360 |
 
 ## Structure
 
 ```
-flake.nix                          # Multi-system entry point
-.sops.yaml                         # age key recipients per machine
+flake.nix                          # Multi-system entry; mkDarwinSystem / mkNixosSystem helpers
+.sops.yaml                         # age key recipients — one per machine
 secrets/
-  toyotama.yaml                    # Encrypted: toyotama git signing key
-  ungyo.yaml                       # Encrypted: ungyo git signing key
-hosts/{toyotama,ungyo}/default.nix # Per-machine darwin config + sops setup
-modules/darwin/
-  common.nix                       # Shared: system defaults, fonts, user
-  brew-common.nix                  # Homebrew packages on all machines
-  brew-{toyotama,ungyo}.nix        # Machine-specific packages
-modules/home-manager/
-  common/                          # Shared: packages, git, zsh, tmux
-  {toyotama,ungyo}/                # Machine-specific home config
-  dotfiles/                        # Shared dotfiles (alacritty, nvim, zellij, etc.)
-  pwsh/                            # PowerShell profile + module lists
+  toyotama.yaml                    # Encrypted: toyotama SSH signing key (+ future secrets)
+  ungyo.yaml                       # Encrypted: ungyo SSH signing key (+ future secrets)
+hosts/
+  toyotama/default.nix             # toyotama darwin config: keyboard, firewall, dock, sops
+  ungyo/default.nix                # ungyo darwin config: keyboard, nix.enable=false, sops
+modules/
+  darwin/
+    common.nix                     # Shared: system defaults, fonts, user, nix options
+    brew-common.nix                # Homebrew packages on every darwin machine
+    brew-toyotama.nix              # toyotama-only casks/brews
+    brew-ungyo.nix                 # ungyo-only casks/brews
+  home-manager/
+    common/
+      default.nix                  # Shared packages, programs, dotfile symlinks
+      git.nix                      # Git + SSH signing via sops secret (no hardcoded key)
+      zsh.nix                      # Zsh + aliases (nixswitch/nixup use hostname specialArg)
+      tmux.nix                     # Tmux (identical across machines)
+      nu.nix                       # Nushell (disabled — broken since 02-02-26)
+    toyotama/default.nix           # Claude Code settings, pay-respects
+    ungyo/default.nix              # ungyo-specific home additions (currently stub)
+    dotfiles/                      # Shared dotfiles (alacritty, ghostty, nvim, zellij, etc.)
+    pwsh/                          # PowerShell profile + module lists
+scripts/
+  nixup.sh                         # flake update + darwin-rebuild (called by nixup alias)
+docs/
+  hosts.md                         # Per-host first-time setup instructions
 ```
 
 ## Applying
 
 ```bash
-# On toyotama:
+# Rebuild current machine (hostname must match a darwinConfigurations key):
 darwin-rebuild switch --flake ~/src/IsildursBane-Nix#toyotama
-
-# On ungyo:
 darwin-rebuild switch --flake ~/src/IsildursBane-Nix#ungyo
 
-# Via alias (after first apply sets up zsh aliases):
-nixswitch   # rebuild current machine
+# After first apply, aliases are available:
+nixswitch   # darwin-rebuild switch for this machine
 nixup       # brew update + flake update + rebuild
 nixclean    # nix-store --gc
 ```
 
-## Secrets Setup (SOPS + age)
+## Secrets (SOPS + age)
 
-SSH signing keys (stored in 1Password) are managed via sops-nix — no raw keys in nix files.
+SSH signing keys live in 1Password. The public keys are stored as sops-encrypted secrets, decrypted at activation — no key material in any `.nix` file.
 
-### Toyotama (first-time)
+`git.nix` references the decrypted key path via `osConfig.sops.secrets.git_signing_key.path`.
 
-The age key already exists. Just encrypt the secrets file:
+Each machine has its own age key (`~/.config/sops/age/keys.txt`) and its own secrets file. See [docs/hosts.md](docs/hosts.md) for per-host setup.
 
-```bash
-# Verify age key exists:
-cat ~/.config/sops/age/keys.txt
+## Adding a New macOS Host
 
-# Edit + encrypt toyotama secrets:
-cd ~/src/IsildursBane-Nix
-sops secrets/toyotama.yaml
-# The file in secrets/ is a plaintext template; sops will encrypt on save.
-```
+1. **Add host directory:**
+   ```
+   hosts/<newhostname>/default.nix
+   ```
+   Copy from an existing host. Set `networking.hostName`, `system.keyboard`, sops block, and `home-manager.users.justin` imports.
 
-### Ungyo (first-time)
+2. **Add machine-specific brew module** (if needed):
+   ```
+   modules/darwin/brew-<newhostname>.nix
+   ```
+   Import it from `hosts/<newhostname>/default.nix`.
 
-```bash
-# 1. Generate age key on Ungyo:
-mkdir -p ~/.config/sops/age
-age-keygen -o ~/.config/sops/age/keys.txt
-grep "^# public" ~/.config/sops/age/keys.txt  # copy this value
+3. **Add machine-specific home module** (if needed):
+   ```
+   modules/home-manager/<newhostname>/default.nix
+   ```
+   Import it in the host's `home-manager.users.justin`.
 
-# 2. Update .sops.yaml: replace <UNGYO_AGE_PUBLIC_KEY> with the value above
+4. **Generate age key on the new machine:**
+   ```bash
+   mkdir -p ~/.config/sops/age
+   age-keygen -o ~/.config/sops/age/keys.txt
+   grep "^# public" ~/.config/sops/age/keys.txt
+   ```
 
-# 3. Create SSH signing key in 1Password for Ungyo (new key item)
-#    Get the public key from 1Password
+5. **Update `.sops.yaml`** — add the new age public key and a creation rule:
+   ```yaml
+   - &newhostname age1...
+   creation_rules:
+     - path_regex: secrets/newhostname\.yaml$
+       key_groups:
+         - age:
+           - *newhostname
+   ```
 
-# 4. Fill in and encrypt ungyo secrets:
-sops secrets/ungyo.yaml  # add the SSH public key, save to encrypt
+6. **Create and encrypt secrets:**
+   ```bash
+   sops secrets/<newhostname>.yaml
+   # add git_signing_key (SSH pubkey from 1Password), save to encrypt
+   ```
 
-# 5. Apply:
-darwin-rebuild switch --flake ~/src/IsildursBane-Nix#ungyo
-```
+7. **Register in `flake.nix`:**
+   ```nix
+   darwinConfigurations = {
+     # ...existing...
+     newhostname = mkDarwinSystem { hostname = "newhostname"; };
+   };
+   ```
 
-## Bootstrap (fresh machine)
+8. **Apply:**
+   ```bash
+   darwin-rebuild switch --flake ~/src/IsildursBane-Nix#newhostname
+   ```
 
-```bash
-# Install nix (determinate installer on ungyo, standard on toyotama):
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+## Adding a New Linux (NixOS) Host
 
-# Install nix-darwin:
-nix run nix-darwin -- switch --flake ~/src/IsildursBane-Nix#<hostname>
+1. **Add a `mkNixosSystem` helper to `flake.nix`** (stub already present as `nixosConfigurations = {}`):
+   ```nix
+   mkNixosSystem = { hostname, system ? "x86_64-linux" }:
+     nixpkgs.lib.nixosSystem {
+       inherit system;
+       specialArgs = { inherit hostname; };
+       modules = [
+         sops-nix.nixosModules.sops
+         home-manager.nixosModules.home-manager
+         { home-manager.extraSpecialArgs = { inherit hostname; }; }
+         ./hosts/${hostname}/default.nix
+       ];
+     };
+   ```
 
-# Subsequent rebuilds:
-darwin-rebuild switch --flake ~/src/IsildursBane-Nix#<hostname>
-```
+2. **Add host directory:**
+   ```
+   hosts/<newhostname>/default.nix       # hardware, networking, users
+   hosts/<newhostname>/hardware.nix      # generated via nixos-generate-config
+   ```
 
-## Key Design Decisions
+3. **Add NixOS-specific modules** under `modules/nixos/` as needed (packages differ from darwin; no brew).
 
-- **SSH signing key in SOPS**: `git.nix` references `osConfig.sops.secrets.git_signing_key.path` — the sops-decrypted file path. No key material in any `.nix` file.
-- **Per-machine secrets**: Each machine has its own age key and secrets file. Toyotama and Ungyo have different SSH signing keys in 1Password.
-- **`hostname` specialArg**: Flows from `flake.nix` → `specialArgs` (darwin) + `extraSpecialArgs` (home-manager). Used in `zsh.nix` for `nixswitch`/`nixup` aliases.
-- **brew-common + brew-{host}**: Homebrew config merges across modules. Common packages + MAS apps on all machines; host-specific additions layered on top.
-- **Linux stub**: `nixosConfigurations = {}` in `flake.nix` — add Linux hosts when needed without restructuring.
+4. **Home-manager common modules are reusable** — but drop darwin-only settings (1Password SSH sign path, brew aliases). Pass overrides via the host's home-manager module.
+
+5. **SOPS setup** is identical to macOS (steps 4–6 above). Use `sops-nix.nixosModules.sops` instead of `darwinModules`.
+
+6. **Register in `flake.nix`:**
+   ```nix
+   nixosConfigurations = {
+     newhostname = mkNixosSystem { hostname = "newhostname"; };
+   };
+   ```
+
+7. **Apply:**
+   ```bash
+   sudo nixos-rebuild switch --flake ~/src/IsildursBane-Nix#newhostname
+   ```
