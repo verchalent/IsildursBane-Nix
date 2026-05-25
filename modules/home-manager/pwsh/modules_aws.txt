@@ -1,0 +1,11 @@
+AppStream
+Common
+ConfigService
+DynamoDBv2
+EC2
+RDS
+Route53
+S3
+SecurityToken
+SimpleSystemsManagement
+WorkSpaces

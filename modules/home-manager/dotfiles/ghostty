@@ -1,0 +1,7 @@
+# This is the configuration file for Ghostty.
+font-size = 13
+background = #212121
+background-opacity = 0.95
+window-padding-x = 10,10
+# Fallback to xterm-256color via ssh if terminfo is missing - Does not seem to work properly
+shell-integration-features = ssh-env,ssh-terminfo

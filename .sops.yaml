@@ -1,0 +1,13 @@
+keys:
+  - &toyotama age1vdz5zvsttp3q7c7d3u0rry8tymfrmak5ddnavshqkd7ds8hm0pdszckaqa
+  - &ungyo <UNGYO_AGE_PUBLIC_KEY>  # fill after: age-keygen -y ~/.config/sops/age/keys.txt on Ungyo
+
+creation_rules:
+  - path_regex: secrets/toyotama\.yaml$
+    key_groups:
+      - age:
+        - *toyotama
+  - path_regex: secrets/ungyo\.yaml$
+    key_groups:
+      - age:
+        - *ungyo

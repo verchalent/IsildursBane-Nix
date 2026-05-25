@@ -1,0 +1,40 @@
+{ config, pkgs, hostname, ... }: {
+  imports = [
+    ../../modules/darwin/common.nix
+    ../../modules/darwin/brew-common.nix
+    ../../modules/darwin/brew-toyotama.nix
+  ];
+
+  networking.hostName = "toyotama";
+
+  # M4 MacBook Air — Caps Lock NOT remapped (all-keyboard mapping causes issues on external keyboards)
+  system.keyboard = {
+    enableKeyMapping = true;
+    remapCapsLockToEscape = false;
+  };
+
+  # Firewall + stealth mode (laptop-specific; lulu also installed)
+  networking.applicationFirewall = {
+    enable = true;
+    enableStealthMode = true;
+  };
+
+  # Dock: Alacritty pinned (laptop primary terminal)
+  system.defaults.dock.persistent-apps = [
+    { app = "/Applications/Alacritty.app"; }
+    { app = "/System/Applications/System Settings.app"; }
+    { app = "/System/Applications/Utilities/Activity Monitor.app"; }
+  ];
+
+  # SOPS: toyotama age key at standard path
+  sops = {
+    defaultSopsFile = ../../secrets/toyotama.yaml;
+    age.keyFile = "/Users/justin/.config/sops/age/keys.txt";
+    secrets.git_signing_key = { owner = "justin"; };
+  };
+
+  home-manager.users.justin = { imports = [
+    ../../modules/home-manager/common/default.nix
+    ../../modules/home-manager/toyotama/default.nix
+  ]; };
+}

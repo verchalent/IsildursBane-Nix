@@ -1,0 +1,52 @@
+[window]
+
+opacity = 0.95
+
+padding.x = 10
+padding.y = 10
+
+decorations = "Full"
+decorations_theme_variant =  "Dark"
+
+[font]
+
+normal.family = "JetBrainsMono Nerd Font"
+bold.family = "JetBrainsMono Nerd Font"
+italic.family = "JetBrainsMono Nerd Font"
+bold_italic.family = "JetBrainsMono Nerd Font"
+
+size = 13.0
+
+
+# Colors (Dracula+) https://github.com/alacritty/alacritty-theme/blob/master/themes/dracula_plus.toml
+
+[colors.primary]
+background = '#212121'
+foreground = '#F8F8F2'
+
+[colors.cursor]
+text = '#0E1415'
+cursor = '#ECEFF4'
+
+[colors.normal]
+black = '#21222C'
+red = '#FF5555'
+green = '#50FA7B'
+yellow = '#FFCB6B'
+blue = '#82AAFF'
+magenta = '#C792EA'
+cyan = '#8BE9FD'
+white = '#F8F9F2'
+
+[colors.bright]
+black = '#545454'
+red = '#FF6E6E'
+green = '#69FF94'
+yellow = '#FFCB6B'
+blue = '#D6ACFF'
+magenta = '#FF92DF'
+cyan = '#A4FFFF'
+white = '#F8F8F2'
+
+[keyboard] 
+bindings = [ { key = "Return", mods = "Shift", chars = "\n" } ]
