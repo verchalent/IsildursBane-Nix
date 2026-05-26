@@ -6,7 +6,7 @@
     ./git.nix
   ];
 
-  home.stateVersion = "25.11";
+  home.stateVersion = "26.11";
 
   home.packages = with pkgs; [
     age          # age encryption (needed for sops key management)
