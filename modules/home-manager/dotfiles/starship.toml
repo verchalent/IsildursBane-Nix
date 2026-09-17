@@ -1,0 +1,106 @@
+# Starship config — replaces powerlevel10k. Icons/colors ported from the
+# prior p10k setup where a starship equivalent exists.
+
+format = """
+$os\
+$directory\
+$git_branch\
+$git_status\
+$character"""
+
+right_format = """
+$status\
+$cmd_duration\
+$jobs\
+$direnv\
+$nix_shell\
+$time"""
+
+add_newline = false
+
+[os]
+disabled = false
+style = "white"
+format = "[$symbol]($style) "
+[os.symbols]
+Fedora = ""
+Macos = ""
+Ubuntu = ""
+Debian = ""
+Arch = ""
+Mint = ""
+openSUSE = ""
+SUSE = ""
+CentOS = ""
+Redhat = ""
+RedHatEnterprise = ""
+Alpine = ""
+Manjaro = ""
+Gentoo = ""
+Raspbian = ""
+NixOS = ""
+Windows = ""
+# Falls back to the generic Linux penguin for distros without a distinct icon
+Linux = ""
+Kali = ""
+Void = ""
+EndeavourOS = ""
+RockyLinux = ""
+AlmaLinux = ""
+
+[directory]
+style = "31"
+truncation_length = 0
+truncate_to_repo = false
+truncation_symbol = "…/"
+read_only = " "
+
+[git_branch]
+symbol = " "
+style = "76"
+
+[git_status]
+style = "178"
+conflicted = "="
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+untracked = "?"
+stashed = "*"
+modified = "!"
+staged = "+${count}"
+renamed = "»"
+deleted = "✘"
+
+[character]
+success_symbol = "[❯](76)"
+error_symbol = "[❯](196)"
+
+[status]
+disabled = false
+format = "[$symbol$status]($style) "
+symbol = "✘"
+style = "196"
+
+[cmd_duration]
+min_time = 0
+format = "[$duration]($style) "
+style = "yellow"
+
+[jobs]
+symbol = "✦ "
+style = "cyan"
+
+[direnv]
+disabled = false
+format = "[$symbol$loaded/$allowed]($style) "
+
+[nix_shell]
+disabled = false
+format = "[$symbol$state]($style) "
+
+[time]
+disabled = false
+time_format = "%H:%M:%S"
+format = "[$time]($style) "
+style = "bold white"

@@ -20,12 +20,11 @@
     procs
     ripgrep
     tealdeer
-    zsh-powerlevel10k
   ];
 
   home.sessionVariables = {
     PAGER = "less";
-    CLICLOLOR = 1;
+    CLICOLOR = 1;
     EDITOR = "nvim";
   };
 
@@ -69,7 +68,8 @@
     ".config/powershell/Microsoft.PowerShell_profile.ps1".source = ../pwsh/Microsoft.PowerShell_profile.ps1;
     ".config/powershell/modules_aws.txt".source   = ../pwsh/modules_aws.txt;
     ".config/powershell/modules.txt".source       = ../pwsh/modules.txt;
+    ".config/starship.toml".source                = ../dotfiles/starship.toml;
+    ".config/zsh/.zsh_plugins.txt".source         = ../dotfiles/zsh_plugins.txt;
     ".inputrc".source                             = ../dotfiles/inputrc;
-    ".p10k.zsh".source                            = ../dotfiles/p10k.zsh;
   };
 }

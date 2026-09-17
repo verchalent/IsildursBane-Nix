@@ -2,28 +2,30 @@
   programs.zsh = {
     enable = true;
     enableCompletion = true;
-    autosuggestion.enable = true;
-    syntaxHighlighting.enable = true;
+    # autosuggestions + syntax-highlighting come from the antidote bundle
+    # below instead, so the plugin isn't loaded twice.
+    autosuggestion.enable = false;
+    syntaxHighlighting.enable = false;
+
+    profileExtra = ''
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    '';
 
     initContent = ''
       eval "$(zellij setup --generate-auto-start zsh)"
-      [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
-      . "$HOME/.cargo/env"
+      [[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
+
       zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
-    ''; # Zellij auto-start, p10k, cargo env, case-insensitive completion
 
-    plugins = [
-      {
-        name = "powerlevel10k";
-        src = pkgs.zsh-powerlevel10k;
-        file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
-      }
-    ];
+      # antidote replaces oh-my-zsh / powerlevel10k
+      export ZSH_CACHE_DIR="$HOME/.cache/zsh"
+      mkdir -p "$ZSH_CACHE_DIR/completions"
+      source "$(brew --prefix antidote)/share/antidote/antidote.zsh"
+      antidote load "$HOME/.config/zsh/.zsh_plugins.txt"
 
-    localVariables = {
-      POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD = true;
-      ZSH_THEME = "powerlevel10k/powerlevel10k";
-    };
+      # starship replaces powerlevel10k
+      eval "$(starship init zsh)"
+    ''; # Zellij auto-start, cargo env, case-insensitive completion, antidote plugins, starship prompt
 
     shellAliases = {
       brewup    = "brew update && brew upgrade && brew cleanup --prune=all";

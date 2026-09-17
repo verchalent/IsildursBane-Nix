@@ -41,12 +41,14 @@
     ];
 
     brews = [
+      "antidote"  # zsh plugin manager, replaces oh-my-zsh/p10k
       "awscli"    # Breaks when done nix-native
       "curl"
       "fzf"       # Nix version behind
       "igrep"     # Grep replacement
       "mas"       # Mac App Store CLI
       "oh-my-posh" # Shell prompt for nushell
+      "starship"  # Prompt, replaces powerlevel10k
       "trippy"    # Network diagnostics
       "uv"        # Python package manager
       "zellij"    # Terminal multiplexer; nix version behind

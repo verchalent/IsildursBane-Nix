@@ -1,0 +1,14 @@
+# antidote bundle file — oh-my-zsh plugin equivalents loaded via antidote
+# instead of oh-my-zsh itself.
+
+zsh-users/zsh-autosuggestions
+ohmyzsh/ohmyzsh path:plugins/git
+ohmyzsh/ohmyzsh path:plugins/1password
+ohmyzsh/ohmyzsh path:plugins/chezmoi
+ohmyzsh/ohmyzsh path:plugins/podman
+ohmyzsh/ohmyzsh path:plugins/dnf
+ohmyzsh/ohmyzsh path:plugins/systemd
+MichaelAquilina/zsh-you-should-use
+
+# must load last
+zsh-users/zsh-syntax-highlighting
