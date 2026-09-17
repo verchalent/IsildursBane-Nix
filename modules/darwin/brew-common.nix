@@ -47,7 +47,6 @@
       "fzf"       # Nix version behind
       "igrep"     # Grep replacement
       "mas"       # Mac App Store CLI
-      "oh-my-posh" # Shell prompt for nushell
       "starship"  # Prompt, replaces powerlevel10k
       "trippy"    # Network diagnostics
       "uv"        # Python package manager
