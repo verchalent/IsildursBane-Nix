@@ -25,7 +25,37 @@
 
       # starship replaces powerlevel10k
       eval "$(starship init zsh)"
-    ''; # Zellij auto-start, cargo env, case-insensitive completion, antidote plugins, starship prompt
+
+      # Plain `nix-store --gc` reclaims almost nothing: every kept generation
+      # is its own GC root, so anything it references reads as "in use".
+      # These prune generations first (unrooting old closures), then collect
+      # garbage. Neither ever touches the *current* generation, so you can't
+      # GC your way into an unbootable system.
+      #
+      # nixclean: safe/routine — drops darwin + home-manager generations
+      # older than 30 days, keeps recent rollback history.
+      nixclean() {
+        echo "==> [1/3] Pruning darwin system generations older than 30d..."
+        sudo nix-env --delete-generations 30d --profile /nix/var/nix/profiles/system || return 1
+        echo "==> [2/3] Pruning home-manager generations older than 30d..."
+        nix-env --delete-generations 30d --profile ~/.local/state/nix/profiles/home-manager || return 1
+        echo "==> [3/3] Collecting garbage..."
+        sudo nix-collect-garbage -d
+        echo "==> nixclean done."
+      }
+      # nixdeepclean: aggressive — drops every generation except the one
+      # currently active. Use when you want the space back and don't need
+      # to roll back past today.
+      nixdeepclean() {
+        echo "==> [1/3] Pruning darwin system generations (all but current)..."
+        sudo nix-env --delete-generations old --profile /nix/var/nix/profiles/system || return 1
+        echo "==> [2/3] Pruning home-manager generations (all but current)..."
+        nix-env --delete-generations old --profile ~/.local/state/nix/profiles/home-manager || return 1
+        echo "==> [3/3] Collecting garbage..."
+        sudo nix-collect-garbage -d
+        echo "==> nixdeepclean done."
+      }
+    ''; # Zellij auto-start, cargo env, case-insensitive completion, antidote plugins, starship prompt, nixclean/nixdeepclean
 
     shellAliases = {
       # bundle cleanup uninstalls anything not declared in the Nix-generated
@@ -42,19 +72,8 @@
       # hostname specialArg ensures each machine rebuilds its own configuration
       nixswitch = "darwin-rebuild switch --flake ~/src/IsildursBane-Nix#${hostname}";
       nixup     = "brewup; pushd ~/src/IsildursBane-Nix; nix flake update && sudo darwin-rebuild switch --flake ~/src/IsildursBane-Nix#${hostname}; popd";
-      # Plain `nix-store --gc` reclaims almost nothing: every kept generation
-      # is its own GC root, so anything it references reads as "in use".
-      # These prune generations first (unrooting old closures), then collect
-      # garbage. Neither ever touches the *current* generation, so you can't
-      # GC your way into an unbootable system.
-      #
-      # nixclean: safe/routine — drops darwin + home-manager generations
-      # older than 30 days, keeps recent rollback history.
-      nixclean  = "sudo nix-env --delete-generations 30d --profile /nix/var/nix/profiles/system && nix-env --delete-generations 30d --profile ~/.local/state/nix/profiles/home-manager && sudo nix-collect-garbage -d";
-      # nixdeepclean: aggressive — drops every generation except the one
-      # currently active. Use when you want the space back and don't need
-      # to roll back past today.
-      nixdeepclean = "sudo nix-env --delete-generations old --profile /nix/var/nix/profiles/system && nix-env --delete-generations old --profile ~/.local/state/nix/profiles/home-manager && sudo nix-collect-garbage -d";
+      # nixclean / nixdeepclean are now zsh functions (see initContent) so
+      # each stage can be echoed as it runs.
       powershell = "pwsh";
       ps        = "procs";
       ssh       = "TERM=xterm-256color /usr/bin/ssh"; # Fix terminal type for alacritty/ghostty
