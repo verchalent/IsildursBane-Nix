@@ -4,8 +4,12 @@
 
   homebrew = {
     enable = true;
-    caskArgs.no_quarantine = true;
     global.brewfile = true;
+    # caskArgs.no_quarantine intentionally omitted: `brew bundle` on Homebrew
+    # 7.0.4 mis-translates it to `--no_quarantine` (underscore) when shelling
+    # out to `brew install --cask`, which errors as an invalid option on any
+    # fresh cask install. Redundant anyway — LaunchServices.LSQuarantine =
+    # false (in common.nix) already disables Gatekeeper quarantine OS-wide.
 
     masApps = {
       Keynote    = 409183694;
