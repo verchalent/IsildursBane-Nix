@@ -50,11 +50,11 @@
       #
       # nixclean: safe/routine — drops darwin + home-manager generations
       # older than 30 days, keeps recent rollback history.
-      nixclean  = "sudo darwin-rebuild --delete-generations 30d && nix-env --delete-generations 30d --profile ~/.local/state/nix/profiles/home-manager && sudo nix-collect-garbage -d";
+      nixclean  = "sudo nix-env --delete-generations 30d --profile /nix/var/nix/profiles/system && nix-env --delete-generations 30d --profile ~/.local/state/nix/profiles/home-manager && sudo nix-collect-garbage -d";
       # nixdeepclean: aggressive — drops every generation except the one
       # currently active. Use when you want the space back and don't need
       # to roll back past today.
-      nixdeepclean = "sudo darwin-rebuild --delete-generations old && nix-env --delete-generations old --profile ~/.local/state/nix/profiles/home-manager && sudo nix-collect-garbage -d";
+      nixdeepclean = "sudo nix-env --delete-generations old --profile /nix/var/nix/profiles/system && nix-env --delete-generations old --profile ~/.local/state/nix/profiles/home-manager && sudo nix-collect-garbage -d";
       powershell = "pwsh";
       ps        = "procs";
       ssh       = "TERM=xterm-256color /usr/bin/ssh"; # Fix terminal type for alacritty/ghostty
