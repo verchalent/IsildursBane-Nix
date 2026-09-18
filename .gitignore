@@ -9,3 +9,6 @@ result
 # If you see a plaintext yaml here, run: sops --encrypt --in-place secrets/<file>.yaml
 # Unencrypted backup files just in case:
 secrets/*.yaml.bak
+
+# Local working notes, not for commit
+HANDOFF-*.md
