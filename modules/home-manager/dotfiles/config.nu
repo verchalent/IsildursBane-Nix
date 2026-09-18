@@ -7,7 +7,10 @@
 # =============================================================================
 $env.config.show_banner = false
 $env.config.buffer_editor = "hx"
-oh-my-posh init nu --config ~/src/Toyotama-Nix/modules/home-manager/dotfiles/ohmyposh-nu.json
+# starship replaces oh-my-posh (see modules/home-manager/common/zsh.nix)
+mkdir ~/.cache
+starship init nu | save -f ~/.cache/starship-init.nu
+source ~/.cache/starship-init.nu
 
 
 # =============================================================================

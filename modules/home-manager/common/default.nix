@@ -19,6 +19,7 @@
     python3
     procs
     ripgrep
+    sops         # CLI to encrypt/edit secrets/*.yaml (see docs/hosts.md)
     tealdeer
   ];
 
@@ -64,7 +65,6 @@
     ".config/direnv/direnvrc".source              = ../dotfiles/direnvrc;
     ".config/geany/colorschemes/retro.config".source = ../dotfiles/retro.conf;
     ".config/geany/geany.conf".source             = ../dotfiles/geany.conf;
-    ".config/ohmyposh/ohmyposh-nu.json".source    = ../dotfiles/ohmyposh-nu.json;
     ".config/powershell/Microsoft.PowerShell_profile.ps1".source = ../pwsh/Microsoft.PowerShell_profile.ps1;
     ".config/powershell/modules_aws.txt".source   = ../pwsh/modules_aws.txt;
     ".config/powershell/modules.txt".source       = ../pwsh/modules.txt;

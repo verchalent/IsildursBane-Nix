@@ -28,7 +28,10 @@
     ''; # Zellij auto-start, cargo env, case-insensitive completion, antidote plugins, starship prompt
 
     shellAliases = {
-      brewup    = "brew update && brew upgrade && brew cleanup --prune=all";
+      # bundle cleanup uninstalls anything not declared in the Nix-generated
+      # Brewfile (HOMEBREW_BUNDLE_FILE, set by homebrew.global.brewfile); plain
+      # cleanup then prunes old cached versions of what's left.
+      brewup    = "brew update && brew upgrade && brew bundle cleanup --force && brew cleanup --prune=all";
       cat       = "bat";
       cd        = "z";
       explorer  = "open";

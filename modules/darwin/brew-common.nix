@@ -37,7 +37,8 @@
       { name = "raycast";            greedy = true; } # Spotlight replacement
       { name = "vcam";               greedy = true; } # Virtual camera
       { name = "visual-studio-code"; greedy = true; } # Editor
-      { name = "windows-app";        greedy = true; } # RDP client
+      # Windows App: installed via masApps.WindowsApp (toyotama), not a cask —
+      # avoids two copies of the same app.
     ];
 
     brews = [

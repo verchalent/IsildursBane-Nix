@@ -5,7 +5,10 @@
     onActivation = {
       autoUpdate = true; # Auto-update on mini (always on)
       upgrade = true;
-      cleanup = "uninstall";
+      # "check" fails the switch (non-destructively) if undeclared packages
+      # exist, instead of silently drifting or auto-removing on every
+      # activation. Real removal happens via the `brewup` alias.
+      cleanup = "check";
     };
 
     casks = [

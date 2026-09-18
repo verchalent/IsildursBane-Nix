@@ -5,7 +5,10 @@
     onActivation = {
       autoUpdate = false; # Manual update control on laptop
       upgrade = true;
-      cleanup = "uninstall";
+      # "check" fails the switch (non-destructively) if undeclared packages
+      # exist, instead of silently drifting or auto-removing on every
+      # activation. Real removal happens via the `brewup` alias.
+      cleanup = "check";
     };
 
     masApps = {
@@ -15,6 +18,7 @@
     casks = [
       { name = "alacritty";          greedy = true; } # Alt terminal
       { name = "alcove";             greedy = true; } # Notch util
+      { name = "amazon-workspaces";  greedy = true; } # AWS WorkSpaces client (toyotama-only)
       { name = "claude-code";        greedy = true; } # Anthropic Claude CLI
       { name = "docker-desktop";     greedy = true; } # Docker daemon
       { name = "geany";              greedy = true; } # Notepad++ replacement
