@@ -34,7 +34,7 @@
       { name = "alt-tab";            greedy = true; } # Windows-style Cmd+Tab
       { name = "bartender";          greedy = true; } # Menu bar organizer
       { name = "brave-browser";      greedy = true; } # Browser
-      { name = "disk-inventory-x";   greedy = true; } # Disk usage visualizer
+    #  { name = "disk-inventory-x";   greedy = true; } # Disk usage visualizer
       { name = "ghostty";            greedy = true; } # Terminal emulator
       { name = "lulu";               greedy = true; } # Outbound firewall
       { name = "microsoft-edge";     greedy = true; } # Edge for M365
