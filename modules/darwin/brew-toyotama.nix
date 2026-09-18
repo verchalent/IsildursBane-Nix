@@ -19,7 +19,6 @@
       { name = "alacritty";          greedy = true; } # Alt terminal
       { name = "alcove";             greedy = true; } # Notch util
       { name = "amazon-workspaces";  greedy = true; } # AWS WorkSpaces client (toyotama-only)
-      { name = "claude-code";        greedy = true; } # Anthropic Claude CLI
       { name = "docker-desktop";     greedy = true; } # Docker daemon
       { name = "geany";              greedy = true; } # Notepad++ replacement
       { name = "keyclu";             greedy = true; } # Keyboard shortcut hints

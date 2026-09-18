@@ -34,15 +34,14 @@
       { name = "alt-tab";            greedy = true; } # Windows-style Cmd+Tab
       { name = "bartender";          greedy = true; } # Menu bar organizer
       { name = "brave-browser";      greedy = true; } # Browser
-    #  { name = "disk-inventory-x";   greedy = true; } # Disk usage visualizer
+      { name = "claude-code";        greedy = true; } # Anthropic Claude CLI
       { name = "ghostty";            greedy = true; } # Terminal emulator
       { name = "lulu";               greedy = true; } # Outbound firewall
       { name = "microsoft-edge";     greedy = true; } # Edge for M365
       { name = "raycast";            greedy = true; } # Spotlight replacement
+      { name = "vorssaint";           greedy = true; } # GUI tweaks and misc tools
       { name = "vcam";               greedy = true; } # Virtual camera
       { name = "visual-studio-code"; greedy = true; } # Editor
-      # Windows App: installed via masApps.WindowsApp (toyotama), not a cask —
-      # avoids two copies of the same app.
     ];
 
     brews = [
