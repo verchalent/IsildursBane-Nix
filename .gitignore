@@ -4,6 +4,7 @@ result
 *~
 *.swp
 .#*
+.claude
 
 # SOPS: secrets must be encrypted before committing.
 # If you see a plaintext yaml here, run: sops --encrypt --in-place secrets/<file>.yaml
