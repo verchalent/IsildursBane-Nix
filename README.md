@@ -35,8 +35,11 @@ modules/
       nu.nix                       # Nushell (disabled — broken since 02-02-26)
     toyotama/default.nix           # Claude Code settings, pay-respects
     ungyo/default.nix              # ungyo-specific home additions (currently stub)
-    dotfiles/                      # Shared dotfiles (alacritty, ghostty, nvim, zellij, etc.)
+    dotfiles/                      # Dotfiles (alacritty, ghostty, nvim, zellij, etc.)
+      claude/                      # Claude Code settings/statusline/skills (toyotama only)
     pwsh/                          # PowerShell profile + module lists
+    scripts/
+      fixMacOS.sh                  # Manual, not-yet-ported macOS defaults helper (run by hand)
 scripts/
   nixup.sh                         # flake update + darwin-rebuild (called by nixup alias)
 docs/
@@ -51,9 +54,10 @@ darwin-rebuild switch --flake ~/src/IsildursBane-Nix#toyotama
 darwin-rebuild switch --flake ~/src/IsildursBane-Nix#ungyo
 
 # After first apply, aliases are available:
-nixswitch   # darwin-rebuild switch for this machine
-nixup       # brew update + flake update + rebuild
-nixclean    # nix-store --gc
+nixswitch    # darwin-rebuild switch for this machine
+nixup        # brew update/upgrade/cleanup + flake update + rebuild
+nixclean     # prune darwin + home-manager generations older than 30 days, then garbage-collect
+nixdeepclean # prune all generations except the current one, then garbage-collect (more space, no rollback history)
 ```
 
 ## Secrets (SOPS + age)
