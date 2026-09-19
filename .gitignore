@@ -13,3 +13,4 @@ secrets/*.yaml.bak
 
 # Local working notes, not for commit
 HANDOFF-*.md
+notes/*
