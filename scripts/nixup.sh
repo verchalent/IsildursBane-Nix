@@ -10,4 +10,9 @@ echo "==> Updating flake inputs..."
 nix flake update
 
 echo "==> Rebuilding ${HOSTNAME}..."
-sudo darwin-rebuild switch --flake "${REPO_DIR}#${HOSTNAME}"
+if ! sudo darwin-rebuild switch --flake "${REPO_DIR}#${HOSTNAME}"; then
+  echo "==> Rebuild failed; clearing Nix fetch caches and retrying once..."
+  rm -rf ~/.cache/nix/tarball-cache
+  rm -f ~/.cache/nix/fetcher-cache-v4.sqlite*
+  sudo darwin-rebuild switch --flake "${REPO_DIR}#${HOSTNAME}"
+fi
