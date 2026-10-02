@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ config, lib, pkgs, ... }: {
   # Toyotama-only home-manager config (M4 MacBook Air)
 
   # pay-respects: "thefuck" successor — corrects previous console commands
@@ -13,5 +13,16 @@
     ".claude/settings.json".source  = ../dotfiles/claude/settings.json;
     ".claude/statusline.sh".source  = ../dotfiles/claude/statusline.sh;
     ".claude/skills".source         = ../dotfiles/claude/skills;
+
+    # ~/Documents lives on the NAS (autofs mount from modules/darwin/mounts-toyotama.nix)
+    "Documents".source = config.lib.file.mkOutOfStoreSymlink "/mnt/Nirankar/homes/pestilent/Documents";
   };
+
+  # macOS recreates ~/Documents as a real dir; remove it if empty so the symlink can be placed.
+  # rmdir refuses non-empty dirs, in which case checkLinkTargets aborts rather than clobbering.
+  home.activation.removeEmptyDocuments = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
+    if [ -d "$HOME/Documents" ] && [ ! -L "$HOME/Documents" ]; then
+      run rmdir "$HOME/Documents" 2>/dev/null || true
+    fi
+  '';
 }
