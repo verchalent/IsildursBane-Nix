@@ -81,8 +81,13 @@ in
       /usr/sbin/automount -cv >/dev/null
     fi
 
-    # Non-root SMB mounts need user-owned mount points
+    # Non-root SMB mounts need user-owned mount points.
+    # Clear leftover NFS mounts / autofs triggers first (innermost first, so repeat).
     ${lib.concatMapStringsSep "\n" (path: ''
+      for _ in 1 2 3; do
+        /sbin/mount | grep -qE " on ${path} \((nfs|autofs)" || break
+        /sbin/umount -f "${path}" || break
+      done
       if ! /sbin/mount | grep -qF " on ${path} "; then
         mkdir -p "${path}" && chown ${user}:staff "${path}"
       fi
