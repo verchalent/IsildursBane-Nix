@@ -6,6 +6,7 @@ let
   nfsOpts = "-fstype=nfs,rw,resvport,nfsvers=3,soft,intr,tcp,nosuid";
   mounts = {
     "/System/Volumes/Data/mnt/Nirankar/Media" = "nirankar:/volume1/Media";
+    "/System/Volumes/Data/mnt/Nirankar/homes" = "nirankar:/volume1/homes";
   };
 in
 {
