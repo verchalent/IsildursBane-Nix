@@ -43,9 +43,13 @@ let
         /sbin/umount -f "${path}" || /usr/sbin/diskutil unmount force "${path}" >/dev/null
       fi
       if ! is_mounted "${path}"; then
-        /sbin/mount -t smbfs -o ${smbOpts} "//$user:$pw@$host/${src}" "${path}" \
-          && echo "$(date) mounted ${path}" \
-          || echo "$(date) failed to mount ${path}" >&2
+        # mount_smbfs echoes the full URL on error; redact the password before logging
+        if out=$(/sbin/mount -t smbfs -o ${smbOpts} "//$user:$pw@$host/${src}" "${path}" 2>&1); then
+          echo "$(date) mounted ${path}"
+        else
+          echo "''${out//"$pw"/***}" >&2
+          echo "$(date) failed to mount ${path}" >&2
+        fi
       fi
     '') mounts)}
   '';
@@ -72,13 +76,6 @@ in
     if [ ! -L /mnt ]; then
       /System/Library/Filesystems/apfs.fs/Contents/Resources/apfs.util -t || \
         echo "warning: /mnt symlink not created; reboot to apply synthetic.conf" >&2
-    fi
-
-    # Drop the old NFS autofs map; its triggers would otherwise sit on the mount points
-    if grep -q 'auto_nirankar' /etc/auto_master; then
-      echo "removing auto_nirankar from /etc/auto_master..." >&2
-      sed -i "" '/auto_nirankar/d' /etc/auto_master
-      /usr/sbin/automount -cv >/dev/null
     fi
 
     # Non-root SMB mounts need user-owned mount points.
