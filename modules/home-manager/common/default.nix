@@ -31,6 +31,8 @@
 
   programs.atuin = {
     enable = true;
+    # e2e_capture pty test times out in the nix sandbox (18.23.0)
+    package = pkgs.atuin.overrideAttrs { doCheck = false; };
     enableZshIntegration = true;
   };
 
