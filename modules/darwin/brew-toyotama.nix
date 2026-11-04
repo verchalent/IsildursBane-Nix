@@ -26,6 +26,7 @@
       { name = "obsidian";           greedy = true; } # Second brain
       { name = "postman";            greedy = true; } # API testing
       { name = "powershell";         greedy = true; } # PowerShell
+      { name = "remoteviewer";       greedy = true; } # SPICE client (used by pve-spice)
       { name = "signal";             greedy = true; } # Signal messenger
       { name = "spotify";            greedy = true; } # Music
      { name = "tailscale-app";      greedy = true; } # Tailscale VPN GUI
