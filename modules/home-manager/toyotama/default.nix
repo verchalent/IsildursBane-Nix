@@ -8,6 +8,9 @@
     enableZshIntegration = true;
   };
 
+  # pve-spice: Proxmox SPICE console launcher (needs the remoteviewer cask, see brew-toyotama.nix)
+  home.packages = [ (import ../scripts/pve-spice.nix { inherit pkgs; }) ];
+
   # Claude Code settings (laptop only — claude-code cask installed on toyotama)
   home.file = {
     ".claude/settings.json".source  = ../dotfiles/claude/settings.json;
