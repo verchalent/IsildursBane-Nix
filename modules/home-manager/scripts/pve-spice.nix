@@ -10,7 +10,7 @@ pkgs.writeShellApplication {
   text = ''
     [ $# -eq 1 ] || { echo "usage: pve-spice <vmid|name>" >&2; exit 2; }
     PVE_HOST=''${PVE_HOST:-192.168.1.248}
-    # shellcheck disable=SC1091
+    # shellcheck disable=SC1090,SC1091
     . ~/.config/pve-spice.env
     : "''${PVE_TOKEN:?set PVE_TOKEN in ~/.config/pve-spice.env}"
 
