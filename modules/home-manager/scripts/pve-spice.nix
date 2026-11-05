@@ -1,4 +1,4 @@
-# pve-spice: open a Proxmox VM's SPICE console in RemoteViewer.
+# pve-spice: open a Proxmox VM's SPICE console in remote-viewer.
 # Usage: pve-spice 106   or   pve-spice myvm
 # Everything comes from the flake: `host` is set by the caller, and the API
 # token is read from `tokenFile` (a sops-nix secret, content:
@@ -37,8 +37,8 @@ pkgs.writeShellApplication {
         "https://$PVE_HOST:8006/api2/json/nodes/$NODE/qemu/$ID/spiceproxy" \
       | jq -r '.data | "[virt-viewer]", (to_entries[] | "\(.key)=\(.value)")' > "$f"
 
-    # The remoteviewer cask installs RemoteViewer.app (no remote-viewer binary).
-    # -W waits for the app to quit so the temp file outlives the connection.
-    open -W -a RemoteViewer "$f"
-  '';
+    # remote-viewer comes from the virt-viewer brew (see brew-toyotama.nix); it blocks
+    # until the console closes, so the temp file outlives the connection.
+    /opt/homebrew/bin/remote-viewer "$f"
+  ''';
 }
