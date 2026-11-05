@@ -7,14 +7,16 @@
 { pkgs, host, tokenFile }:
 pkgs.writeShellApplication {
   name = "pve-spice";
-  runtimeInputs = [ pkgs.curl pkgs.jq ];
+  runtimeInputs = [ pkgs.jq ]; # curl: macOS /usr/bin/curl, see api() below
   text = ''
     [ $# -eq 1 ] || { echo "usage: pve-spice <vmid|name>" >&2; exit 2; }
     PVE_HOST=''${PVE_HOST:-${host}}
     [ -r "${tokenFile}" ] || { echo "token file ${tokenFile} missing or unreadable (sops secret pve_token)" >&2; exit 1; }
     PVE_TOKEN=$(tr -d '[:space:]' < "${tokenFile}")
 
-    api() { curl -sSk --connect-timeout 5 --fail-with-body -H "Authorization: PVEAPIToken=$PVE_TOKEN" "$@"; }
+    # /usr/bin/curl, not nixpkgs curl: it reaches the LAN where the nix-store one gets "could not connect"
+    # (macOS local-network privacy applies per binary).
+    api() { /usr/bin/curl -sSk --connect-timeout 5 --fail-with-body -H "Authorization: PVEAPIToken=$PVE_TOKEN" "$@"; }
 
     res=$(api "https://$PVE_HOST:8006/api2/json/cluster/resources?type=vm") \
       || { echo "API call failed (see curl error above; 401/403 = token/permissions): $res" >&2; exit 1; }
