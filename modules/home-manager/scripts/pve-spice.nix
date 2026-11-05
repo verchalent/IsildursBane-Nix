@@ -14,10 +14,10 @@ pkgs.writeShellApplication {
     [ -r "${tokenFile}" ] || { echo "token file ${tokenFile} missing or unreadable (sops secret pve_token)" >&2; exit 1; }
     PVE_TOKEN=$(tr -d '[:space:]' < "${tokenFile}")
 
-    api() { curl -sk --fail-with-body -H "Authorization: PVEAPIToken=$PVE_TOKEN" "$@"; }
+    api() { curl -sSk --connect-timeout 5 --fail-with-body -H "Authorization: PVEAPIToken=$PVE_TOKEN" "$@"; }
 
     res=$(api "https://$PVE_HOST:8006/api2/json/cluster/resources?type=vm") \
-      || { echo "API call failed (token/permissions?): $res" >&2; exit 1; }
+      || { echo "API call failed (see curl error above; 401/403 = token/permissions): $res" >&2; exit 1; }
     ID="" NODE=""
     read -r ID NODE <<<"$(jq -r --arg a "$1" \
       '.data[] | select(.type=="qemu" and (.name==$a or (.vmid|tostring)==$a)) | "\(.vmid) \(.node)"' \
