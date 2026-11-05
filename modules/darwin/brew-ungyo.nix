@@ -5,10 +5,9 @@
     onActivation = {
       autoUpdate = true; # Auto-update on mini (always on)
       upgrade = true;
-      # "check" fails the switch (non-destructively) if undeclared packages
-      # exist, instead of silently drifting or auto-removing on every
-      # activation. Real removal happens via the `brewup` alias.
-      cleanup = "check";
+      # "uninstall" removes any formula/cask not declared in this config on
+      # every activation (app data is kept; "zap" would delete it too).
+      cleanup = "uninstall";
     };
 
     masApps = {
