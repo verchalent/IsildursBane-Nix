@@ -12,8 +12,8 @@
   home.packages = [
     (import ../scripts/pve-spice.nix {
       inherit pkgs;
-      host = "192.168.1.248";
       tokenFile = osConfig.sops.secrets.pve_token.path;
+      sshTargetFile = osConfig.sops.secrets.pve_ssh_target.path;
     })
   ];
 

@@ -33,6 +33,7 @@
     age.keyFile = "/Users/justin/.config/sops/age/keys.txt";
     secrets.git_signing_key = { owner = "justin"; };
     secrets.pve_token       = { owner = "justin"; }; # Proxmox API token for pve-spice
+    secrets.pve_ssh_target  = { owner = "justin"; }; # user@host for the pve-spice SSH tunnel
   };
 
   home-manager.users.justin = { imports = [
