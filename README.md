@@ -41,9 +41,10 @@ modules/
     scripts/
       fixMacOS.sh                  # Manual, not-yet-ported macOS defaults helper (run by hand)
 scripts/
-  nixup.sh                         # flake update + darwin-rebuild (called by nixup alias)
+  nixup.sh                         # pull, flake update, darwin-rebuild, push flake.lock (called by nixup alias)
 docs/
   hosts.md                         # Per-host first-time setup instructions
+  pve-spice.md                     # Proxmox SPICE launcher on toyotama: setup + troubleshooting
 ```
 
 ## Applying
