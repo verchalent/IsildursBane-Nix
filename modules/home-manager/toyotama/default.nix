@@ -8,7 +8,7 @@
     enableZshIntegration = true;
   };
 
-  # pve-spice: Proxmox SPICE console launcher (needs the virt-viewer brew, see brew-toyotama.nix)
+  # pve-spice: Proxmox SPICE console launcher (uses nixpkgs virt-viewer for remote-viewer)
   home.packages = [
     (import ../scripts/pve-spice.nix {
       inherit pkgs;

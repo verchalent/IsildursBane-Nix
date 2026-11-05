@@ -7,7 +7,7 @@
 { pkgs, host, tokenFile }:
 pkgs.writeShellApplication {
   name = "pve-spice";
-  runtimeInputs = [ pkgs.jq ]; # curl: macOS /usr/bin/curl, see api() below
+  runtimeInputs = [ pkgs.jq pkgs.virt-viewer ]; # curl: macOS /usr/bin/curl, see api() below
   text = ''
     [ $# -eq 1 ] || { echo "usage: pve-spice <vmid|name>" >&2; exit 2; }
     PVE_HOST=''${PVE_HOST:-${host}}
@@ -37,8 +37,9 @@ pkgs.writeShellApplication {
         "https://$PVE_HOST:8006/api2/json/nodes/$NODE/qemu/$ID/spiceproxy" \
       | jq -r '.data | "[virt-viewer]", (to_entries[] | "\(.key)=\(.value)")' > "$f"
 
-    # remote-viewer comes from the virt-viewer brew (see brew-toyotama.nix); it blocks
-    # until the console closes, so the temp file outlives the connection.
-    /opt/homebrew/bin/remote-viewer "$f"
+    # remote-viewer comes from nixpkgs virt-viewer (native arm64; the brew tap's source
+    # URL is dead and the remoteviewer cask is x86_64-only). It blocks until the console
+    # closes, so the temp file outlives the connection.
+    remote-viewer "$f"
   '';
 }

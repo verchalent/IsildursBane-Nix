@@ -14,10 +14,6 @@
       WindowsApp = 1295203466; # Suppress MAS update prompts
     };
 
-    # virt-viewer (provides remote-viewer) is built natively for Apple Silicon
-    # from this tap; the core `remoteviewer` cask is x86_64-only (needs Rosetta).
-    taps = [ "jeffreywildman/virt-manager" ];
-
     casks = [
       { name = "alacritty";          greedy = true; } # Alt terminal
       { name = "amazon-workspaces";  greedy = true; } # AWS WorkSpaces client (toyotama-only)
@@ -45,7 +41,6 @@
       "node"       # Node.js
       "p0f"        # Passive OS fingerprinting
       "sherlock"   # OSINT username search
-      "jeffreywildman/virt-manager/virt-viewer" # SPICE client (remote-viewer), used by pve-spice
       "squiid"     # TUI RPN calculator
       "tailscale"  # Tailscale CLI/daemon
     ];
