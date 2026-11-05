@@ -71,7 +71,7 @@
       ls        = "lsd";
       # hostname specialArg ensures each machine rebuilds its own configuration
       nixswitch = "darwin-rebuild switch --flake ~/src/IsildursBane-Nix#${hostname}";
-      nixup     = "brewup; pushd ~/src/IsildursBane-Nix; nix flake update && sudo darwin-rebuild switch --flake ~/src/IsildursBane-Nix#${hostname}; popd";
+      nixup     = "brewup; ~/src/IsildursBane-Nix/scripts/nixup.sh"; # pull, update, rebuild, push flake.lock
       # nixclean / nixdeepclean are now zsh functions (see initContent) so
       # each stage can be echoed as it runs.
       powershell = "pwsh";

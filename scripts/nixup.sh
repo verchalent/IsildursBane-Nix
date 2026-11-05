@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 # Update flake inputs and rebuild the current machine's configuration.
-# The nixswitch/nixup zsh aliases call this from the repo root.
+# The nixup zsh alias calls this (after brewup). On success, commits and
+# pushes flake.lock to main so the other Mac picks it up with a plain pull.
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 HOSTNAME="$(hostname -s)"
+
+cd "${REPO_DIR}"
+
+echo "==> Syncing repo..."
+git pull --rebase --autostash
 
 echo "==> Updating flake inputs..."
 nix flake update
@@ -15,4 +21,14 @@ if ! sudo darwin-rebuild switch --flake "${REPO_DIR}#${HOSTNAME}"; then
   rm -rf ~/.cache/nix/tarball-cache
   rm -f ~/.cache/nix/fetcher-cache-v4.sqlite*
   sudo darwin-rebuild switch --flake "${REPO_DIR}#${HOSTNAME}"
+fi
+
+# Only reached if the rebuild succeeded, so a broken lock is never pushed.
+if git diff --quiet -- flake.lock; then
+  echo "==> flake.lock unchanged; nothing to push."
+else
+  echo "==> Committing flake.lock..."
+  git add flake.lock
+  git commit -m "flake.lock: update $(date +%F) (${HOSTNAME})" -- flake.lock
+  git push || echo "==> WARNING: push failed; flake.lock is committed locally. Push it manually." >&2
 fi
