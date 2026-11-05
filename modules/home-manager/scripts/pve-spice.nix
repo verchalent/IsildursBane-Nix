@@ -40,5 +40,5 @@ pkgs.writeShellApplication {
     # remote-viewer comes from the virt-viewer brew (see brew-toyotama.nix); it blocks
     # until the console closes, so the temp file outlives the connection.
     /opt/homebrew/bin/remote-viewer "$f"
-  ''';
+  '';
 }
