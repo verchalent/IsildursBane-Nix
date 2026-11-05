@@ -32,6 +32,7 @@
     defaultSopsFile = ../../secrets/toyotama.yaml;
     age.keyFile = "/Users/justin/.config/sops/age/keys.txt";
     secrets.git_signing_key = { owner = "justin"; };
+    secrets.pve_token       = { owner = "justin"; }; # Proxmox API token for pve-spice
   };
 
   home-manager.users.justin = { imports = [

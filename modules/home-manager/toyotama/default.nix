@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }: {
+{ config, osConfig, lib, pkgs, ... }: {
   # Toyotama-only home-manager config (M4 MacBook Air)
 
   # pay-respects: "thefuck" successor — corrects previous console commands
@@ -9,7 +9,13 @@
   };
 
   # pve-spice: Proxmox SPICE console launcher (needs the remoteviewer cask, see brew-toyotama.nix)
-  home.packages = [ (import ../scripts/pve-spice.nix { inherit pkgs; }) ];
+  home.packages = [
+    (import ../scripts/pve-spice.nix {
+      inherit pkgs;
+      host = "192.168.1.248";
+      tokenFile = osConfig.sops.secrets.pve_token.path;
+    })
+  ];
 
   # Claude Code settings (laptop only — claude-code cask installed on toyotama)
   home.file = {

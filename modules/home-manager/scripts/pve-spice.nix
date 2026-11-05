@@ -1,18 +1,18 @@
 # pve-spice: open a Proxmox VM's SPICE console in RemoteViewer.
 # Usage: pve-spice 106   or   pve-spice myvm
-# Needs ~/.config/pve-spice.env (chmod 600, never in the repo):
-#   PVE_TOKEN='user@realm!tokenid=secret'     # role PVEVMUser on /vms
-#   PVE_HOST=192.168.1.248                    # optional, this is the default
-{ pkgs }:
+# Everything comes from the flake: `host` is set by the caller, and the API
+# token is read from `tokenFile` (a sops-nix secret, content:
+# 'user@realm!tokenid=secret', role PVEVMUser on /vms). Nothing lives in ~/.config.
+# PVE_HOST in the environment overrides the host for one-off use.
+{ pkgs, host, tokenFile }:
 pkgs.writeShellApplication {
   name = "pve-spice";
   runtimeInputs = [ pkgs.curl pkgs.jq ];
   text = ''
     [ $# -eq 1 ] || { echo "usage: pve-spice <vmid|name>" >&2; exit 2; }
-    PVE_HOST=''${PVE_HOST:-192.168.1.248}
-    # shellcheck disable=SC1090,SC1091
-    . ~/.config/pve-spice.env
-    : "''${PVE_TOKEN:?set PVE_TOKEN in ~/.config/pve-spice.env}"
+    PVE_HOST=''${PVE_HOST:-${host}}
+    [ -r "${tokenFile}" ] || { echo "token file ${tokenFile} missing or unreadable (sops secret pve_token)" >&2; exit 1; }
+    PVE_TOKEN=$(tr -d '[:space:]' < "${tokenFile}")
 
     api() { curl -sk --fail-with-body -H "Authorization: PVEAPIToken=$PVE_TOKEN" "$@"; }
 
