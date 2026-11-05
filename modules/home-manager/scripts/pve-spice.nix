@@ -33,9 +33,10 @@ pkgs.writeShellApplication {
     dir=$(mktemp -d -t pvespice.XXXXXX)
     trap 'rm -rf "$dir"' EXIT
     f="$dir/vm.vv"
+    # The CA cert value contains real newlines; a .vv file needs them as a literal \n.
     api -X POST -d "proxy=$PVE_HOST" \
         "https://$PVE_HOST:8006/api2/json/nodes/$NODE/qemu/$ID/spiceproxy" \
-      | jq -r '.data | "[virt-viewer]", (to_entries[] | "\(.key)=\(.value)")' > "$f"
+      | jq -r '.data | "[virt-viewer]", (to_entries[] | "\(.key)=\(.value | tostring | gsub("\n"; "\\n"))")' > "$f"
 
     # remote-viewer comes from nixpkgs virt-viewer (native arm64; the brew tap's source
     # URL is dead and the remoteviewer cask is x86_64-only). It blocks until the console
