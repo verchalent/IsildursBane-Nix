@@ -31,7 +31,8 @@ pkgs.writeShellApplication {
 
     # The .vv file holds a ~30 s ticket: keep it in a private temp dir, remove on exit.
     dir=$(mktemp -d -t pvespice.XXXXXX)
-    trap 'rm -rf "$dir"' EXIT
+    # PVE_KEEP=1 keeps the file (it has a ticket: redact password= before sharing it).
+    if [ -n "''${PVE_KEEP:-}" ]; then echo "keeping $dir/vm.vv" >&2; else trap 'rm -rf "$dir"' EXIT; fi
     f="$dir/vm.vv"
     # The CA cert value contains real newlines; a .vv file needs them as a literal \n.
     api -X POST -d "proxy=$PVE_HOST" \
