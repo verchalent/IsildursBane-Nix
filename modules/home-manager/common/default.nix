@@ -15,18 +15,19 @@
     less
     lsd
     fastfetch
-    neovim
+    igrep        # grep replacement (moved from brew; nixpkgs has the same version)
     python3
     procs
     ripgrep
     sops         # CLI to encrypt/edit secrets/*.yaml (see docs/hosts.md)
     tealdeer
+    trippy       # network diagnostics (moved from brew)
   ];
 
   home.sessionVariables = {
     PAGER = "less";
     CLICOLOR = 1;
-    EDITOR = "nvim";
+    EDITOR = "hx";
   };
 
   programs.atuin = {
@@ -58,10 +59,7 @@
 
   # Dotfile symlinks (shared across all machines)
   home.file = {
-    ".config/alacritty/alacritty.toml".source    = ../dotfiles/alacritty.toml;
     ".config/ghostty/config".source               = ../dotfiles/ghostty;
-    ".config/nvim/init.vim".source                = ../dotfiles/nvim.rc;
-    ".config/nvim/init.lua".source                = ../dotfiles/nvim-plugins.lua;
     ".config/zellij/config.kdl".source            = ../dotfiles/zellij.kdl;
     ".config/helix/config.toml".source            = ../dotfiles/helix.toml;
     ".config/direnv/direnvrc".source              = ../dotfiles/direnvrc;

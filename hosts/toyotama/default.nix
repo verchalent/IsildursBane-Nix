@@ -20,9 +20,9 @@
     enableStealthMode = true;
   };
 
-  # Dock: Alacritty pinned (laptop primary terminal)
+  # Dock: Ghostty pinned (laptop primary terminal)
   system.defaults.dock.persistent-apps = [
-    { app = "/Applications/Alacritty.app"; }
+    { app = "/Applications/Ghostty.app"; }
     { app = "/System/Applications/System Settings.app"; }
     { app = "/System/Applications/Utilities/Activity Monitor.app"; }
   ];

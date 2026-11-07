@@ -76,7 +76,7 @@
       # each stage can be echoed as it runs.
       powershell = "pwsh";
       ps        = "procs";
-      ssh       = "TERM=xterm-256color /usr/bin/ssh"; # Fix terminal type for alacritty/ghostty
+      ssh       = "TERM=xterm-256color /usr/bin/ssh"; # Fix terminal type for ghostty
       vi        = "hx";
     };
   };

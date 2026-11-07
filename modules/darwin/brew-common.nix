@@ -11,48 +11,36 @@
     # fresh cask install. Redundant anyway — LaunchServices.LSQuarantine =
     # false (in common.nix) already disables Gatekeeper quarantine OS-wide.
 
+    # Only Windows App from the Mac App Store (RDP client; not available as a cask).
     masApps = {
-      Keynote    = 409183694;
-      iMovie     = 408981434;
-      Pages      = 409201541;
-      GarageBand = 682658836;
-      Numbers    = 409203825;
+      WindowsApp = 1295203466;
     };
 
-    taps = [
-      "fujiapple852/trippy"
-      {
-        name = "konradsz/igrep";
-        clone_target = "https://github.com/konradsz/igrep.git";
-        force_auto_update = true;
-      }
-    ];
-
+    # `greedy` is only set (in the host files) where brew must do the updating: apps that
+    # claim auto-update but are not reliably updated by themselves. Everything else updates
+    # itself, which also avoids brew replacing app bundles on every switch.
     casks = [
-      { name = "1password";          greedy = true; } # Password manager
-      { name = "1password-cli";      greedy = true; } # 1Password CLI
-      { name = "alt-tab";            greedy = true; } # Windows-style Cmd+Tab
-      { name = "bartender";          greedy = true; } # Menu bar organizer
-      { name = "brave-browser";      greedy = true; } # Browser
-      { name = "claude-code";        greedy = true; } # Anthropic Claude CLI
-      { name = "ghostty";            greedy = true; } # Terminal emulator
-      { name = "lulu";               greedy = true; } # Outbound firewall
-      { name = "microsoft-edge";     greedy = true; } # Edge for M365
-      { name = "raycast";            greedy = true; } # Spotlight replacement
-      { name = "vorssaint";           greedy = true; } # GUI tweaks and misc tools
-      { name = "vcam";               greedy = true; } # Virtual camera
-      { name = "visual-studio-code"; greedy = true; } # Editor
+      "1password"                       # Password manager
+      "1password-cli"                   # 1Password CLI
+      "alt-tab"                         # Windows-style Cmd+Tab
+      "bartender"                       # Menu bar organizer
+      "brave-browser"                   # Browser
+      "claude-code"                     # Anthropic Claude CLI
+      "ghostty"                         # Terminal emulator
+      "lulu"                            # Outbound firewall
+      "microsoft-edge"                  # Edge for M365
+      "raycast"                         # Spotlight replacement
+      "vorssaint"                       # GUI tweaks and misc tools
+      "vcam"                            # Virtual camera
+      "visual-studio-code"              # Editor
     ];
 
     brews = [
       "antidote"  # zsh plugin manager, replaces oh-my-zsh/p10k
       "awscli"    # Breaks when done nix-native
-      "curl"
       "fzf"       # Nix version behind
-      "igrep"     # Grep replacement
       "mas"       # Mac App Store CLI
       "starship"  # Prompt, replaces powerlevel10k
-      "trippy"    # Network diagnostics
       "uv"        # Python package manager
       "zellij"    # Terminal multiplexer; nix version behind
       "zoxide"    # Nix version behind

@@ -10,6 +10,8 @@
 
   # pve-spice: Proxmox SPICE console launcher (uses nixpkgs virt-viewer for remote-viewer)
   home.packages = [
+    pkgs.lazygit    # git TUI (moved from brew)
+    pkgs.lazydocker # container TUI; needs an engine (none installed by default)
     (import ../scripts/pve-spice.nix {
       inherit pkgs;
       tokenFile = osConfig.sops.secrets.pve_token.path;

@@ -36,7 +36,7 @@ modules/
       nu.nix                       # Nushell (disabled — broken since 02-02-26)
     toyotama/default.nix           # Claude Code settings, pay-respects
     ungyo/default.nix              # ungyo-specific home additions (currently stub)
-    dotfiles/                      # Dotfiles (alacritty, ghostty, nvim, zellij, etc.)
+    dotfiles/                      # Dotfiles (ghostty, helix, zellij, etc.)
       claude/                      # Claude Code settings/statusline/skills (toyotama only)
     pwsh/                          # PowerShell profile + module lists
     scripts/

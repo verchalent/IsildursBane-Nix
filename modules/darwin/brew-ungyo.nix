@@ -10,12 +10,8 @@
       cleanup = "uninstall";
     };
 
-    masApps = {
-      WindowsApp = 1295203466; # RDP client — via MAS, not a cask (was cask on Ungyo-nix)
-    };
-
     casks = [
-      { name = "insta360-link-controller"; greedy = true; } # Insta360 webcam
+      "insta360-link-controller"        # Insta360 webcam
     ];
 
     brews = [
