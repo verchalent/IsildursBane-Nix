@@ -101,7 +101,7 @@ it skips what is done and the switch is itself idempotent.
 - Git signing: confirm this machine's signing key is enabled in the 1Password SSH agent.
 - LuLu, Tailscale (where installed): approve system/network extensions in System Settings →
   Privacy & Security and sign in.
-- Bartender, Raycast, AltTab and similar: grant Accessibility / Screen Recording when prompted.
+- Bartender, Raycast, Vorssaint and similar: grant Accessibility / Screen Recording when prompted.
 - Browsers: sign in / sync. FileVault and Touch ID: enable if not already.
 
 ### Doing it by hand (what the script runs)
