@@ -26,6 +26,7 @@ modules/
     brew-common.nix                # Homebrew packages on every darwin machine
     brew-toyotama.nix              # toyotama-only casks/brews
     brew-ungyo.nix                 # ungyo-only casks/brews
+    mounts-toyotama.nix            # toyotama-only NAS autofs mounts
   home-manager/
     common/
       default.nix                  # Shared packages, programs, dotfile symlinks
@@ -43,9 +44,15 @@ modules/
 scripts/
   nixup.sh                         # pull, flake update, darwin-rebuild, push flake.lock (called by nixup alias)
 docs/
-  hosts.md                         # Per-host first-time setup instructions
+  hosts.md                         # Per-host setup + the blank-Mac-to-conformed runbook
   pve-spice.md                     # Proxmox SPICE launcher on toyotama: setup + troubleshooting
 ```
+
+## New machine from blank
+
+Follow the ordered runbook in [docs/hosts.md](docs/hosts.md#new-mac-blank-to-conformed). It
+covers what must exist before the first switch (App Store login, Command Line Tools, Homebrew,
+Nix, 1Password, the age key), the first-switch command, and the manual steps afterwards.
 
 ## Applying
 
@@ -89,7 +96,8 @@ Each machine has its own age key (`~/.config/sops/age/keys.txt`) and its own sec
    ```
    Import it in the host's `home-manager.users.justin`.
 
-4. **Generate age key on the new machine:**
+4. **Generate age key on the new machine** (before the first switch; `age` isn't installed yet,
+   so use `nix shell nixpkgs#age -c age-keygen ...`):
    ```bash
    mkdir -p ~/.config/sops/age
    age-keygen -o ~/.config/sops/age/keys.txt
@@ -120,7 +128,9 @@ Each machine has its own age key (`~/.config/sops/age/keys.txt`) and its own sec
    };
    ```
 
-8. **Apply:**
+8. **Apply:** the first time on a blank machine, follow the runbook (the first switch is
+   `sudo nix run nix-darwin/master#darwin-rebuild -- switch --flake ~/src/IsildursBane-Nix#newhostname`).
+   Afterwards:
    ```bash
    darwin-rebuild switch --flake ~/src/IsildursBane-Nix#newhostname
    ```
