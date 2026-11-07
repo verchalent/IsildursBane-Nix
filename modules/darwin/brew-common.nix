@@ -22,7 +22,6 @@
     casks = [
       "1password"                       # Password manager
       "1password-cli"                   # 1Password CLI
-      "alt-tab"                         # Windows-style Cmd+Tab
       "bartender"                       # Menu bar organizer
       "brave-browser"                   # Browser
       "claude-code"                     # Anthropic Claude CLI
