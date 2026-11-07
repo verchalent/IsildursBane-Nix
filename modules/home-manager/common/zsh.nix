@@ -61,7 +61,7 @@
       # bundle cleanup uninstalls anything not declared in the Nix-generated
       # Brewfile (HOMEBREW_BUNDLE_FILE, set by homebrew.global.brewfile); plain
       # cleanup then prunes old cached versions of what's left.
-      brewup    = "brew update && brew upgrade && brew bundle cleanup --force && brew cleanup --prune=all";
+      brewup    = "~/src/IsildursBane-Nix/scripts/guard-brave.sh && brew update && brew upgrade && brew bundle cleanup --force && brew cleanup --prune=all";
       cat       = "bat";
       cd        = "z";
       explorer  = "open";
