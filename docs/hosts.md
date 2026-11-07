@@ -58,7 +58,7 @@ prerequisite it can check is in place.
 | 1 | Finish macOS setup and sign in to the Apple ID | Setup Assistant |
 | 2 | Open the **App Store** and sign in | `mas` cannot sign in; the install of Mac App Store apps fails otherwise |
 | 3 | `xcode-select --install`, accept, wait | Gives you `git`; a GUI dialog |
-| 4 | Install **1Password** (`brew`-free: download the app from 1password.com), sign in, enable *Settings → Developer → Use the SSH agent*, add the suggested lines to `~/.ssh/config` | The repo is private; your keys live there |
+| 4 | Install **1Password** (download the app from 1password.com; Homebrew is not installed yet), sign in, enable *Settings → Developer → Use the SSH agent*, add the suggested lines to `~/.ssh/config` | The repo is private; your keys live there |
 | 5 | In 1Password, create this machine's **SSH signing key** (ed25519) and keep its *public* key handy | The script asks you to paste it |
 | 6 | `mkdir -p ~/src && git clone git@github.com:verchalent/IsildursBane-Nix.git ~/src/IsildursBane-Nix` | Needs steps 3 and 4 |
 
