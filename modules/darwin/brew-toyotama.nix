@@ -15,7 +15,6 @@
       "geany"                           # Notepad++ replacement
       "keyclu"                          # Keyboard shortcut hints
       "Netiquette"                      # Objective-See socket monitor
-      "notunes"                         # Disable iTunes
       "obsidian"                        # Second brain
       "powershell"                      # PowerShell
       "signal"                          # Signal messenger
