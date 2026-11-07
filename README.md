@@ -42,6 +42,7 @@ modules/
     scripts/
       fixMacOS.sh                  # Manual, not-yet-ported macOS defaults helper (run by hand)
 scripts/
+  bootstrap-darwin.sh              # new Mac: preflight, Homebrew, Nix, age key, secrets gate, first switch
   nixup.sh                         # pull, flake update, darwin-rebuild, push flake.lock (called by nixup alias)
 docs/
   hosts.md                         # Per-host setup + the blank-Mac-to-conformed runbook
@@ -50,9 +51,11 @@ docs/
 
 ## New machine from blank
 
-Follow the ordered runbook in [docs/hosts.md](docs/hosts.md#new-mac-blank-to-conformed). It
-covers what must exist before the first switch (App Store login, Command Line Tools, Homebrew,
-Nix, 1Password, the age key), the first-switch command, and the manual steps afterwards.
+Follow [docs/hosts.md](docs/hosts.md#new-mac-blank-to-conformed): a short list of manual steps
+(App Store login, Command Line Tools, 1Password SSH agent, clone), then
+`scripts/bootstrap-darwin.sh <hostname>`. The script checks every prerequisite it can before
+changing anything (`--check` does only that), then installs Homebrew and Nix, creates the age key,
+verifies the secrets decrypt, and runs the first switch.
 
 ## Applying
 

@@ -47,149 +47,87 @@ and a re-created secrets file; step 6 covers it.
 
 ## New Mac: blank to conformed
 
-Order matters: several steps cannot work until an earlier one is done. Times are **estimates**
-for a fast connection, to be replaced with measured values on the next real run (see the table
-at the end).
+Two parts: a short list of things only a human can do **before** the script (about 20 minutes),
+then one script that does everything else and refuses to start the long install unless every
+prerequisite it can check is in place.
 
-Hands-on = you must be at the machine. Everything else is waiting.
+### Part 1: do these by hand first (the script cannot)
 
-| # | Step | Hands-on? | Est. time |
-|---|------|-----------|-----------|
-| 1 | macOS setup, Apple ID, **sign into the App Store** | yes | 10 min |
-| 2 | Command Line Tools | start, then wait | 3–10 min |
-| 3 | Homebrew | wait | 1–3 min |
-| 4 | Nix (Determinate installer) | wait | 1–2 min |
-| 5 | 1Password: install, sign in, enable SSH agent; clone repo | yes | 5 min |
-| 6 | age key, `.sops.yaml`, secrets file | yes | 3 min |
-| 7 | Hostname + first `darwin-rebuild switch` | start, then wait | 20–60 min |
-| 8 | Manual post-steps (logins, permissions) | yes | 15 min |
+| # | Manual step | Why it cannot be automated |
+|---|-------------|----------------------------|
+| 1 | Finish macOS setup and sign in to the Apple ID | Setup Assistant |
+| 2 | Open the **App Store** and sign in | `mas` cannot sign in; the install of Mac App Store apps fails otherwise |
+| 3 | `xcode-select --install`, accept, wait | Gives you `git`; a GUI dialog |
+| 4 | Install **1Password** (`brew`-free: download the app from 1password.com), sign in, enable *Settings → Developer → Use the SSH agent*, add the suggested lines to `~/.ssh/config` | The repo is private; your keys live there |
+| 5 | In 1Password, create this machine's **SSH signing key** (ed25519) and keep its *public* key handy | The script asks you to paste it |
+| 6 | `mkdir -p ~/src && git clone git@github.com:verchalent/IsildursBane-Nix.git ~/src/IsildursBane-Nix` | Needs steps 3 and 4 |
 
-### 1. macOS setup and the App Store
+You do **not** need to create the age key yourself: the script generates it. You **do** need
+to save it in 1Password when the script says so (losing it just means repeating the key step).
 
-Finish Setup Assistant and sign in to the Apple ID. **Open the App Store and sign in**: the
-config installs Mac App Store apps (`homebrew.masApps`), and `mas` cannot sign in for you.
-Without this the first switch fails partway through the Homebrew step.
-
-### 2. Command Line Tools (provides `git`)
+### Part 2: run the script
 
 ```bash
-xcode-select --install     # accept the dialog, wait for it to finish
+cd ~/src/IsildursBane-Nix
+scripts/bootstrap-darwin.sh --check ungyo     # read-only: lists every problem at once
+scripts/bootstrap-darwin.sh ungyo             # the real run
 ```
 
-### 3. Homebrew
+`--check` changes nothing. The real run does the same checks first and **stops with the full list
+of problems before touching anything**. It then runs these phases, each safe to repeat; after
+fixing whatever stopped it, simply run it again:
 
-nix-darwin manages Homebrew packages but does not install Homebrew itself.
+1. Homebrew (not installed by nix-darwin itself).
+2. Nix (Determinate installer, flakes on by default).
+3. This machine's age key (`~/.config/sops/age/keys.txt`), generated if missing.
+4. **Secrets gate:** proves this machine can decrypt `secrets/<host>.yaml` *before* the long
+   step. A replacement Mac has a new key, so the old file cannot be opened; if the file only
+   holds the git signing public key (as `ungyo` does) the script updates `.sops.yaml`, asks you
+   to paste the public key from step 5, re-encrypts, and commits locally. If the file holds
+   other secrets it stops and tells you exactly how to re-key it from a machine that can still
+   decrypt it. Push the resulting commit when convenient.
+5. Hostname (flake name and machine name must match).
+6. Moves the stock `/etc/bashrc` and `/etc/zshrc` aside, which nix-darwin otherwise refuses to overwrite.
+7. The first `darwin-rebuild switch`: the long step (Nix store, then every cask and App Store app).
 
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-eval "$(/opt/homebrew/bin/brew shellenv)"
-```
+At the end it prints how long each phase took; paste those into the table below.
 
-### 4. Nix
+If something still fails inside the switch (a cask download, a network blip), re-run the script:
+it skips what is done and the switch is itself idempotent.
 
-Hosts that set `nix.enable = false` (ungyo) use the Determinate installer. It enables flakes
-by default. (toyotama uses the standard installer: `sh <(curl -L https://nixos.org/nix/install)`.)
+### After the switch (manual)
 
-```bash
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-```
-
-Open a new terminal afterwards so `nix` is on `PATH`.
-
-### 5. 1Password and the repo
-
-The repo is private, so cloning needs an SSH key, and the keys live in 1Password.
-
-```bash
-brew install --cask 1password
-```
-
-Open 1Password, sign in, then Settings → Developer → enable **Use the SSH agent**, and add the
-suggested `IdentityAgent` lines to `~/.ssh/config`. Then:
-
-```bash
-mkdir -p ~/src && git clone git@github.com:verchalent/IsildursBane-Nix.git ~/src/IsildursBane-Nix
-```
-
-(The 1Password cask is declared in the config too, so the later switch simply adopts it.)
-
-### 6. age key and secrets
-
-The first switch decrypts `secrets/<host>.yaml` during activation, so the key must exist
-**before** it. `age` is only installed by the switch itself, so borrow it from nixpkgs:
-
-```bash
-mkdir -p ~/.config/sops/age && chmod 700 ~/.config/sops/age
-nix shell nixpkgs#age -c age-keygen -o ~/.config/sops/age/keys.txt
-chmod 600 ~/.config/sops/age/keys.txt
-grep "^# public" ~/.config/sops/age/keys.txt        # the public key for .sops.yaml
-```
-
-Save `keys.txt` in 1Password as well. Losing it means re-doing this step.
-
-Then, in the repo:
-
-1. Put the new public key in `.sops.yaml` (replace the old `&ungyo` value, or add a new
-   anchor and `creation_rules` entry for a new host name).
-2. The old `secrets/ungyo.yaml` is encrypted to the old machine's key and cannot be opened
-   here. Its only content is a **public** SSH key, so re-create it rather than re-key:
-   in 1Password, create (or open) the signing key for this machine and copy its public key, then
-   ```bash
-   git rm secrets/ungyo.yaml        # only when reusing the name
-   nix shell nixpkgs#sops -c sops secrets/ungyo.yaml
-   ```
-   and enter `git_signing_key: "ssh-ed25519 AAAA..."`; saving encrypts it.
-3. Commit and push `.sops.yaml` and the secrets file.
-
-### 7. Hostname and first switch
-
-The flake key and the machine hostname must match.
-
-```bash
-sudo scutil --set HostName ungyo
-sudo scutil --set LocalHostName ungyo
-sudo scutil --set ComputerName ungyo
-```
-
-The first run uses `nix run` because `darwin-rebuild` is not installed yet. Recent nix-darwin
-requires root for this (check the nix-darwin README if the command changes again):
-
-```bash
-sudo nix run nix-darwin/master#darwin-rebuild -- switch --flake ~/src/IsildursBane-Nix#ungyo
-```
-
-If it stops with `Unexpected files in /etc`, move each listed file aside and re-run, e.g.
-`sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin`.
-
-This is the long step: Nix store downloads, then every Homebrew cask (all are `greedy`) and
-Mac App Store app. After it succeeds, open a new terminal; `nixswitch` and `nixup` now exist.
-
-### 8. Manual steps no config can do
-
-- 1Password: sign in to the CLI integration (Settings → Developer → "Integrate with 1Password CLI").
-- Git signing: confirm the 1Password key is enabled in the SSH agent (the commit-signing path
-  is set in `git.nix`).
-- LuLu, Tailscale (if installed on the host): approve the system/network extensions in System
-  Settings → Privacy & Security, and sign in.
+- 1Password: *Settings → Developer → Integrate with 1Password CLI*.
+- Git signing: confirm this machine's signing key is enabled in the 1Password SSH agent.
+- LuLu, Tailscale (where installed): approve system/network extensions in System Settings →
+  Privacy & Security and sign in.
 - Bartender, Raycast, AltTab and similar: grant Accessibility / Screen Recording when prompted.
-- Brave and other browsers: sign in / sync.
-- FileVault and Touch ID: enable if not already.
+- Browsers: sign in / sync. FileVault and Touch ID: enable if not already.
 
-### Measured timings (fill in on the next run)
+### Doing it by hand (what the script runs)
 
-| Step | Estimate | Measured | Notes |
-|------|----------|----------|-------|
-| 2 CLT | 3–10 min | | |
-| 3 Homebrew | 1–3 min | | |
-| 4 Nix | 1–2 min | | |
-| 5 1Password + clone | 5 min | | |
-| 6 age + secrets | 3 min | | |
-| 7 first switch | 20–60 min | | |
-| 8 manual steps | 15 min | | |
+Same order, for reference or if the script is unavailable: Homebrew
+(`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`),
+Nix (`curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install`),
+age key (`nix shell nixpkgs#age -c age-keygen -o ~/.config/sops/age/keys.txt`, then `chmod 600`),
+secrets (`.sops.yaml` + `sops secrets/<host>.yaml`), hostname (`scutil --set HostName|LocalHostName|ComputerName`),
+then `sudo nix run nix-darwin/master#darwin-rebuild -- switch --flake ~/src/IsildursBane-Nix#<host>`.
+If it stops with `Unexpected files in /etc`, move the listed files aside
+(`sudo mv /etc/zshrc /etc/zshrc.before-nix-darwin`).
+
+### Measured timings (fill in from the script's summary on the next real run)
+
+| Phase | Estimate | Measured | Notes |
+|-------|----------|----------|-------|
+| Part 1 (manual) | 20 min | | |
+| Homebrew | 1–3 min | | |
+| Nix | 1–2 min | | |
+| age key + secrets gate | 3 min | | |
+| first switch | 20–60 min | | |
+| After the switch (manual) | 15 min | | |
 
 ### Making it faster
 
-- Do step 1 (App Store login) before anything else, so nothing stalls halfway.
-- Steps 2–4 need no attention once started: kick them off in separate tabs one after another.
-- The first switch is dominated by downloads (casks and `masApps`). To shorten it, trim what the
-  host installs by default; the Brew audit suggestions are in the vault.
+- Do Part 1 completely first; nothing then stalls halfway for a login.
+- The first switch is dominated by downloads (casks and `masApps`). Trimming what the host
+  installs by default shortens it most; see the Brew audit suggestions in the vault.
