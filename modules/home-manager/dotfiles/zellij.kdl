@@ -326,3 +326,9 @@ plugins {
 //
 // theme_dir "/path/to/my/theme_dir"
 show_startup_tips false
+
+// Settings for the zellij terminal window (`zellij terminal`); mirrors dotfiles/ghostty
+terminal {
+    font_size 13
+    opacity 0.95
+}
