@@ -329,6 +329,12 @@ show_startup_tips false
 
 // Settings for the zellij terminal window (`zellij terminal`); mirrors dotfiles/ghostty
 terminal {
+    // Ghostty sets no font-family, so it uses its built-in JetBrains Mono.
+    // Use the installed Nerd Font variant (modules/darwin/common.nix) to match it.
+    font "JetBrainsMono Nerd Font"
     font_size 13
     opacity 0.95
+    theme {
+        background "#212121"
+    }
 }
