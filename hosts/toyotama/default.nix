@@ -3,7 +3,7 @@
     ../../modules/darwin/common.nix
     ../../modules/darwin/brew-common.nix
     ../../modules/darwin/brew-toyotama.nix
-    ../../modules/darwin/mounts-toyotama.nix
+    ../../modules/darwin/mounts-nas.nix
   ];
 
   networking.hostName = "toyotama";

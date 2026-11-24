@@ -3,7 +3,7 @@ let
   # SMB mounts of the NAS, done as the primary user by a launchd agent.
   # Mounting as the user (not root via autofs) makes every file appear owned by that user,
   # sidestepping the local(501)/remote(1000) uid mismatch that NFS AUTH_SYS can't remap.
-  # NAS host, login, and password come from sops (secrets/toyotama.yaml) to keep them out of the repo.
+  # NAS host, login, and password come from sops (secrets/<host>.yaml) to keep them out of the repo.
   # Paths are under /System/Volumes/Data/mnt; /mnt is a synthetic.conf symlink to it.
   user = config.system.primaryUser;
   smbOpts = "nobrowse,soft";

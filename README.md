@@ -26,7 +26,7 @@ modules/
     brew-common.nix                # Homebrew packages on every darwin machine
     brew-toyotama.nix              # toyotama-only casks/brews
     brew-ungyo.nix                 # ungyo-only casks/brews
-    mounts-toyotama.nix            # toyotama-only NAS autofs mounts
+    mounts-nas.nix                # NAS SMB mounts (toyotama, okuninushi)
   home-manager/
     common/
       default.nix                  # Shared packages, programs, dotfile symlinks
