@@ -8,6 +8,7 @@ Unified nix-darwin / NixOS flake for all machines. Single source of truth — sh
 |----------|---------|-----|-------|
 | `toyotama` | M4 MacBook Air | nix-darwin | Full dev + media stack, stealth firewall |
 | `ungyo` | M2 Mac Mini | nix-darwin | Server-oriented, Caps Lock → Escape, insta360 |
+| `okuninushi` | M6 Mac Mini | nix-darwin | Replaces ungyo; starts as a copy, NAS mounts via `mounts-nas.nix` once secrets exist |
 
 ## Structure
 
