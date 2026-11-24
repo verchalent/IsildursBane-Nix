@@ -25,7 +25,7 @@
     ".claude/statusline.sh".source  = ../dotfiles/claude/statusline.sh;
     ".claude/skills".source         = ../dotfiles/claude/skills;
 
-    # ~/Documents lives on the NAS (autofs mount from modules/darwin/mounts-toyotama.nix)
+    # ~/Documents lives on the NAS (autofs mount from modules/darwin/mounts-nas.nix)
     "Documents".source = config.lib.file.mkOutOfStoreSymlink "/mnt/Nirankar/homes/pestilent/Documents";
   };
 

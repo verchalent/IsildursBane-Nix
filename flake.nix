@@ -36,6 +36,7 @@
     darwinConfigurations = {
       toyotama = mkDarwinSystem { hostname = "toyotama"; };
       ungyo    = mkDarwinSystem { hostname = "ungyo"; };
+      okuninushi = mkDarwinSystem { hostname = "okuninushi"; };
     };
 
     # Stub: Linux hosts added here when needed

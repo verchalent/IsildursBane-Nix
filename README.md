@@ -8,6 +8,7 @@ Unified nix-darwin / NixOS flake for all machines. Single source of truth — sh
 |----------|---------|-----|-------|
 | `toyotama` | M4 MacBook Air | nix-darwin | Full dev + media stack, stealth firewall |
 | `ungyo` | M2 Mac Mini | nix-darwin | Server-oriented, Caps Lock → Escape, insta360 |
+| `okuninushi` | M6 Mac Mini | nix-darwin | Replaces ungyo; starts as a copy, NAS mounts via `mounts-nas.nix` once secrets exist |
 
 ## Structure
 
@@ -26,7 +27,7 @@ modules/
     brew-common.nix                # Homebrew packages on every darwin machine
     brew-toyotama.nix              # toyotama-only casks/brews
     brew-ungyo.nix                 # ungyo-only casks/brews
-    mounts-toyotama.nix            # toyotama-only NAS autofs mounts
+    mounts-nas.nix                # NAS SMB mounts (toyotama, okuninushi)
   home-manager/
     common/
       default.nix                  # Shared packages, programs, dotfile symlinks
