@@ -73,11 +73,11 @@ preflight() {
   curl -fsS -m 10 -o /dev/null https://cache.nixos.org/nix-cache-info && ok "cache.nixos.org reachable" \
     || bad "cannot reach cache.nixos.org"
   git -C "$REPO" ls-remote --exit-code origin HEAD >/dev/null 2>&1 \
-    && ok "git can reach origin (SSH agent works)" \
-    || bad "git cannot reach origin: sign in to 1Password and enable its SSH agent"
+    && ok "git can reach origin" \
+    || bad "git cannot reach origin (the repo is public: check the network and the clone URL)"
 
   [ -d /Applications/1Password.app ] && ok "1Password installed" \
-    || warn "1Password not in /Applications yet (the config installs it, but you need it for git/SSH)"
+    || ok "1Password not installed yet: fine, the first switch installs it"
 
   if [ "$(scutil --get HostName 2>/dev/null || true)" != "$HOST" ]; then
     warn "HostName is '$(scutil --get HostName 2>/dev/null || echo unset)'; the script will set it to '$HOST'"
@@ -176,9 +176,12 @@ MSG
   confirm "Create/replace $SECRETS with this machine's key now?" || {
     echo "    Skipped. Re-run when ready." >&2; exit 1; }
 
-  echo "    In 1Password, create or open this machine's SSH signing key and copy its PUBLIC key."
+  echo "    Paste this machine's SSH signing PUBLIC key (from 1Password), or press Enter to skip:"
+  echo "    1Password is installed by the first switch, so skipping is normal on a blank Mac;"
+  echo "    set git_signing_key later with: sops $SECRETS"
   if [ -t 0 ]; then
-    read -r -p "    Paste the public key (ssh-ed25519 AAAA...): " sshpub
+    read -r -p "    Public key (ssh-ed25519 AAAA...) or Enter: " sshpub
+    [ -n "$sshpub" ] || sshpub="ssh-ed25519 PLACEHOLDER-replace-with-sops-after-1password-setup"
   else
     echo "    No terminal to ask on; run interactively." >&2; exit 1
   fi

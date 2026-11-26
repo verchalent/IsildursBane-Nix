@@ -41,7 +41,7 @@ nixup        # brew update + flake update + rebuild
 `ungyo` is a host entry like any other. For a replacement Mac (new hardware, same role), follow
 the runbook below under the existing name, or add a new host (see "Adding a New macOS Host" in
 the README) and retire this one. The age key is **per machine**, so a new Mac needs a new key
-and a re-created secrets file; step 6 covers it.
+and a re-created secrets file; the secrets gate in Part 2 covers it.
 
 ---
 
@@ -57,20 +57,24 @@ prerequisite it can check is in place.
 |---|-------------|----------------------------|
 | 1 | Finish macOS setup and sign in to the Apple ID | Setup Assistant |
 | 2 | Open the **App Store** and sign in | `mas` cannot sign in; the install of Mac App Store apps fails otherwise |
-| 3 | `xcode-select --install`, accept, wait | Gives you `git`; a GUI dialog |
-| 4 | Install **1Password** (download the app from 1password.com; Homebrew is not installed yet), sign in, enable *Settings → Developer → Use the SSH agent*, add the suggested lines to `~/.ssh/config` | The repo is private; your keys live there |
-| 5 | In 1Password, create this machine's **SSH signing key** (ed25519) and keep its *public* key handy | The script asks you to paste it |
-| 6 | `mkdir -p ~/src && git clone git@github.com:verchalent/IsildursBane-Nix.git ~/src/IsildursBane-Nix` | Needs steps 3 and 4 |
+| 3 | `xcode-select --install`, accept, wait | Gives you `git` (and the compiler tools Homebrew needs); a GUI dialog |
+| 4 | `mkdir -p ~/src && git clone https://github.com/verchalent/IsildursBane-Nix.git ~/src/IsildursBane-Nix` | Needs step 3. The repo is public, so no login or SSH key is needed to clone |
 
-You do **not** need to create the age key yourself: the script generates it. You **do** need
-to save it in 1Password when the script says so (losing it just means repeating the key step).
+**Not needed yet:** 1Password. The config installs it (a cask), and it is only needed for git
+signing and for pushing over SSH, which you do after the first switch (see "After the switch").
+**Installed by the script, so do not do them yourself:** Homebrew and Nix. Nothing else has to
+exist on the Mac first beyond steps 1 to 4.
+
+You do **not** need to create the age key yourself: the script generates it. Keep a copy of
+`~/.config/sops/age/keys.txt` somewhere safe (1Password once it is installed); losing it just
+means repeating the key step.
 
 ### Part 2: run the script
 
 ```bash
 cd ~/src/IsildursBane-Nix
-scripts/bootstrap-darwin.sh --check ungyo     # read-only: lists every problem at once
-scripts/bootstrap-darwin.sh ungyo             # the real run
+scripts/bootstrap-darwin.sh --check <host>   # read-only: lists every problem at once
+scripts/bootstrap-darwin.sh <host>           # the real run
 ```
 
 `--check` changes nothing. The real run does the same checks first and **stops with the full list
@@ -83,7 +87,7 @@ fixing whatever stopped it, simply run it again:
 4. **Secrets gate:** proves this machine can decrypt `secrets/<host>.yaml` *before* the long
    step. A replacement Mac has a new key, so the old file cannot be opened; if the file only
    holds the git signing public key (as `ungyo` does) the script updates `.sops.yaml`, asks you
-   to paste the public key from step 5, re-encrypts, and commits locally. If the file holds
+   to paste the machine's SSH signing *public* key (press Enter to skip it for now and fill it in later), re-encrypts, and commits locally. If the file holds
    other secrets it stops and tells you exactly how to re-key it from a machine that can still
    decrypt it. Push the resulting commit when convenient.
 5. Hostname (flake name and machine name must match).
@@ -97,7 +101,9 @@ it skips what is done and the switch is itself idempotent.
 
 ### After the switch (manual)
 
-- 1Password: *Settings → Developer → Integrate with 1Password CLI*.
+- 1Password (installed by the switch): sign in; *Settings → Developer → Use the SSH agent* and *Integrate with 1Password CLI*; add the suggested lines to `~/.ssh/config`.
+- Create this machine's **SSH signing key** (ed25519) in 1Password. If you skipped it at the secrets gate, run `sops secrets/<host>.yaml`, set `git_signing_key` to its public key, then rebuild. Until then `git commit` fails (signing is on).
+- Switch the clone to SSH so you can push: `git remote set-url origin git@github.com:verchalent/IsildursBane-Nix.git`.
 - Git signing: confirm this machine's signing key is enabled in the 1Password SSH agent.
 - LuLu, Tailscale (where installed): approve system/network extensions in System Settings →
   Privacy & Security and sign in.
