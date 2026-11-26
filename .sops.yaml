@@ -1,6 +1,8 @@
 keys:
   - &toyotama age1vdz5zvsttp3q7c7d3u0rry8tymfrmak5ddnavshqkd7ds8hm0pdszckaqa
   - &ungyo age1hetjtz4s9r69mltmydgrexswdvvuqllkzrq3tln6328axwu85yjs4lawk3
+  # placeholder: bootstrap-darwin.sh replaces it with the new Mac's real age public key
+  - &okuninushi age1placeholderreplacedbybootstrapdarwin
 
 creation_rules:
   - path_regex: secrets/toyotama\.yaml$
@@ -11,3 +13,7 @@ creation_rules:
     key_groups:
       - age:
         - *ungyo
+  - path_regex: secrets/okuninushi\.yaml$
+    key_groups:
+      - age:
+        - *okuninushi
