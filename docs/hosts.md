@@ -87,7 +87,7 @@ fixing whatever stopped it, simply run it again:
 4. **Secrets gate:** proves this machine can decrypt `secrets/<host>.yaml` *before* the long
    step. A replacement Mac has a new key, so the old file cannot be opened; if the file only
    holds the git signing public key (as `ungyo` does) the script updates `.sops.yaml`, asks you
-   to paste the machine's SSH signing *public* key (press Enter to skip it for now and fill it in later), re-encrypts, and commits locally. If the file holds
+   to paste the machine's SSH signing *public* key, the full `ssh-ed25519 AAAA...` line, **not** the `SHA256:` fingerprint (press Enter to skip it for now and fill it in later), re-encrypts, and commits locally. If the file holds
    other secrets it stops and tells you exactly how to re-key it from a machine that can still
    decrypt it. Push the resulting commit when convenient.
 5. Hostname (flake name and machine name must match).
