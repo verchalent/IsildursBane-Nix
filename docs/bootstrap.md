@@ -32,7 +32,9 @@ brews but does not install Homebrew itself.
 **4. Nix.** Installs it with the Determinate installer if `nix` is missing (flakes enabled by default).
 
 **5. age key.** Creates `~/.config/sops/age/keys.txt` if missing. This is the machine's key for
-decrypting `secrets/<host>.yaml`. It cannot be recovered: keep a copy (1Password later).
+decrypting `secrets/<host>.yaml`. It cannot be recovered: keep a copy (1Password later). It also
+links `~/Library/Application Support/sops/age` to `~/.config/sops/age`, because macOS `sops` looks
+in the former, so plain `sops secrets/<host>.yaml` works (an existing path is left alone).
 
 **6. Secrets gate.** Proves this machine can decrypt `secrets/<host>.yaml` *before* the long step.
 - Decrypts fine: done.

@@ -133,12 +133,23 @@ phase_nix() {
   command -v nix >/dev/null || { echo "nix not on PATH after install; open a new terminal and re-run" >&2; exit 1; }
 }
 
+# macOS sops looks for its age key in ~/Library/Application Support/sops/age, not ~/.config.
+# Link the former to the latter so a plain `sops secrets/<host>.yaml` works without
+# SOPS_AGE_KEY_FILE. Never replaces something that is already there.
+link_sops_dir() {
+  local lib="$HOME/Library/Application Support/sops"
+  if [ -e "$lib/age" ] || [ -L "$lib/age" ]; then ok "sops macOS key path already present"; return; fi
+  mkdir -p "$lib" && ln -s "$(dirname "$AGE_KEY")" "$lib/age" \
+    && ok "linked '$lib/age' -> $(dirname "$AGE_KEY")"
+}
+
 phase_age_key() {
-  if [ -f "$AGE_KEY" ]; then ok "age key exists ($AGE_KEY)"; return; fi
+  if [ -f "$AGE_KEY" ]; then ok "age key exists ($AGE_KEY)"; link_sops_dir; return; fi
   say "Generating this machine's age key"
   mkdir -p "$(dirname "$AGE_KEY")"; chmod 700 "$(dirname "$AGE_KEY")"
   nix shell nixpkgs#age -c age-keygen -o "$AGE_KEY"
   chmod 600 "$AGE_KEY"
+  link_sops_dir
   echo "    IMPORTANT: save $AGE_KEY in 1Password now. It cannot be recovered."
 }
 
