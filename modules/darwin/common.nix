@@ -93,6 +93,7 @@
       WindowManager = {
         EnableStandardClickToShowDesktop = false;
         StageManagerHideWidgets = true;
+        StandardHideWidgets = true; # desktop widgets off on the normal desktop too
       };
     };
   };
