@@ -46,14 +46,17 @@ scripts/
   bootstrap-darwin.sh              # new Mac: preflight, Homebrew, Nix, age key, secrets gate, first switch
   nixup.sh                         # pull, flake update, darwin-rebuild, push flake.lock (called by nixup alias)
 docs/
+  bootstrap.md                     # What scripts/bootstrap-darwin.sh does, phase by phase
   hosts.md                         # Per-host setup + the blank-Mac-to-conformed runbook
   pve-spice.md                     # Proxmox SPICE launcher on toyotama: setup + troubleshooting
 ```
 
 ## New machine from blank
 
+**Short version:** Command Line Tools, clone the repo (public, https), run `scripts/bootstrap-darwin.sh <hostname>`. What the script does, step by step: [docs/bootstrap.md](docs/bootstrap.md).
+
 Follow [docs/hosts.md](docs/hosts.md#new-mac-blank-to-conformed): a short list of manual steps
-(App Store login, Command Line Tools, 1Password SSH agent, clone), then
+(Apple ID and App Store login, Command Line Tools, clone), then
 `scripts/bootstrap-darwin.sh <hostname>`. The script checks every prerequisite it can before
 changing anything (`--check` does only that), then installs Homebrew and Nix, creates the age key,
 verifies the secrets decrypt, and runs the first switch.
