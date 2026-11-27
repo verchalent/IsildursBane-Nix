@@ -3,8 +3,7 @@
     ../../modules/darwin/common.nix
     ../../modules/darwin/brew-common.nix
     ../../modules/darwin/brew-okuninushi.nix
-    # Enable after secrets/okuninushi.yaml holds nas_smb_host/user/password (sops secrets/okuninushi.yaml):
-    # ../../modules/darwin/mounts-nas.nix
+    ../../modules/darwin/mounts-nas.nix
   ];
 
   networking.hostName = "okuninushi";
